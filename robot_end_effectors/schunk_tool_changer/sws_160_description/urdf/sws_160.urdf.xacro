@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     sws_160_description
+  Description: URDF/xacro for Schunk SWS-160 automatic tool
+               changer (SWK-160 robot side + SWA-160 tool side)
+  Robot:       ABB IRB6700 175/3.05 on IRBT6004 7m rail
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+  ============================================================
+
+  All dimensions from official Schunk datasheet (SWS-160):
+    SWK-160 (robot side / master):  Ø217mm × 55.5mm,  mass=6.44kg
+    SWA-160 (tool side / adapter):  Ø217mm × 37.6mm,  mass=2.86kg
+    Total coupled height:           55.5 + 37.6 = 93.1mm
+
+  NOTE: STL meshes do not match datasheet dimensions (SWK STL = 100.6mm).
+        Cylinders are used for both visual and collision to ensure accuracy.
+
+  Geometry convention:
+    - Link origin is at the MOUNTING face (robot-side face, Z=0)
+    - Geometry extends in +Z direction toward the tool
+    - Cylinder center offset = height/2
+
+  SWK-160:
+    visual/collision center: xyz="0 0 0.02775"  (55.5/2 = 27.75mm)
+    interface joint offset:  xyz="0 0 0.0555"   (full height = 55.5mm)
+
+  SWA-160:
+    visual/collision center: xyz="0 0 0.0188"   (37.6/2 = 18.8mm)
+    tool_mount joint offset: xyz="0 0 0.0376"   (full height = 37.6mm)
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Material definition at top level for RViz -->
+  <material name="schunk_grey">
+    <color rgba="0.4 0.4 0.4 1.0"/>
+  </material>
+
+  <!-- ========================================================
+       SWK-160  —  robot side (master)
+       Mounts on tool0, interface face at Z=+55.5mm
+       ======================================================== -->
+  <xacro:macro name="swk_160_robot_side" params="parent prefix">
+    <link name="${prefix}swk_160_link">
+
+      <!-- Cylinder visual using official datasheet dimensions -->
+      <visual>
+        <origin xyz="0 0 0.02775" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1085" length="0.0555"/>
+        </geometry>
+        <material name="schunk_grey"/>
+      </visual>
+
+      <!-- Collision cylinder — identical to visual -->
+      <collision>
+        <origin xyz="0 0 0.02775" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1085" length="0.0555"/>
+        </geometry>
+      </collision>
+
+      <!-- Inertial — mass from datasheet: 6.44kg -->
+      <inertial>
+        <mass value="6.44"/>
+        <origin xyz="0 0 0.02775" rpy="0 0 0"/>
+        <inertia ixx="0.004" ixy="0.0" ixz="0.0"
+                 iyy="0.004" iyz="0.0" izz="0.007"/>
+      </inertial>
+    </link>
+
+    <!-- Attach SWK to tool0 -->
+    <joint name="${prefix}tool0_to_swk_160" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}swk_160_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Interface frame at the mating face between SWK and SWA -->
+    <link name="${prefix}swk_160_interface"/>
+    <joint name="${prefix}swk_160_to_interface" type="fixed">
+      <parent link="${prefix}swk_160_link"/>
+      <child link="${prefix}swk_160_interface"/>
+      <origin xyz="0 0 0.0555" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+
+  <!-- ========================================================
+       SWA-160  —  tool side (adapter)
+       Mounts on SWK interface face, tool mount at Z=+37.6mm
+       ======================================================== -->
+  <xacro:macro name="swa_160_tool_side" params="parent prefix">
+    <link name="${prefix}swa_160_link">
+
+      <!-- Cylinder visual using official datasheet dimensions -->
+      <visual>
+        <origin xyz="0 0 0.0188" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1085" length="0.0376"/>
+        </geometry>
+        <material name="schunk_grey"/>
+      </visual>
+
+      <!-- Collision cylinder — identical to visual -->
+      <collision>
+        <origin xyz="0 0 0.0188" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.1085" length="0.0376"/>
+        </geometry>
+      </collision>
+
+      <!-- Inertial — mass from datasheet: 2.86kg -->
+      <inertial>
+        <mass value="2.86"/>
+        <origin xyz="0 0 0.0188" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0"
+                 iyy="0.001" iyz="0.0" izz="0.003"/>
+      </inertial>
+    </link>
+
+    <!-- Attach SWA to SWK interface frame -->
+    <joint name="${prefix}swk_interface_to_swa_160" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}swa_160_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Tool mount frame at the gripper mating face -->
+    <link name="${prefix}swa_160_tool_mount"/>
+    <joint name="${prefix}swa_160_to_tool_mount" type="fixed">
+      <parent link="${prefix}swa_160_link"/>
+      <child link="${prefix}swa_160_tool_mount"/>
+      <origin xyz="0 0 0.0376" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,28 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 1
+      Class: rviz_default_plugins/Grid
+      Name: Grid
+      Value: true
+    - Class: rviz_default_plugins/PointCloud2
+      Color Transformer: RGB8
+      Name: PointCloud2
+      Topic:
+        Value: /points2
+      Value: true
+      Size (m): 0.003
+      Style: Points
+    - Class: rviz_default_plugins/Image
+      Name: RGB Image
+      Topic:
+        Value: /rgb/image_raw
+      Value: true
+  Global Options:
+    Fixed Frame: depth_camera_frame
+  Name: root

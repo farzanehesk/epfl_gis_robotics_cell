@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!--
+  Package:     abb_io_controller
+  Description: ROS2 I/O control for Schunk SWS-160 tool changer
+               and Joulin vacuum gripper via ABB RWS digital signals
+  Robot:       ABB IRB6700 175/3.05 on IRBT6004 7m rail
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-10
+-->
+<package format="3">
+  <name>abb_io_controller</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="farzane.eskandarii@gmail.com">farzaneh</maintainer>
+  <license>TODO: License declaration</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>std_srvs</depend>
+  <depend>control_msgs</depend>
+  <depend>abb_egm_rws_managers</depend>
+  <depend>rclcpp_action</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

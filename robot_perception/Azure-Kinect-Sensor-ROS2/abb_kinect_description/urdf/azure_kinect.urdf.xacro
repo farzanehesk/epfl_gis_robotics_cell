@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     abb_kinect_description
+  File:        azure_kinect.urdf.xacro
+  Description: Azure Kinect DK physical geometry macro.
+               Defines camera body and all sensor optical frames.
+               Does NOT attach to any robot frame — attachment
+               is handled by eye_in_hand_mount.urdf.xacro.
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+  ============================================================
+
+  Physical dimensions (Microsoft spec):
+    Body:   126mm x 103mm x 39mm
+    Weight: 440g
+
+  Factory calibration (unit 000720521712):
+    Depth intrinsics: cx=508.7, cy=508.4, fx=503.6, fy=503.5
+    RGB intrinsics:   cx=1021.1, cy=779.0, fx=971.7, fy=971.5
+    Depth-to-RGB translation: -32.007mm, -1.871mm, 3.883mm
+
+  Frame conventions (ROS standard):
+    camera_base             : origin at bottom-center of camera body
+    depth_camera_frame      : depth sensor center
+    depth_camera_optical_frame : ROS optical frame (Z fwd, X right, Y down)
+    rgb_camera_frame        : RGB sensor center
+    rgb_camera_optical_frame   : ROS optical frame (Z fwd, X right, Y down)
+    imu_frame               : IMU sensor center
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="azure_kinect" params="prefix">
+
+    <link name="${prefix}camera_base">
+      <visual>
+        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.126 0.103 0.039"/>
+        </geometry>
+        <material name="kinect_dark_gray">
+          <color rgba="0.2 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.126 0.103 0.039"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.440"/>
+        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
+        <inertia
+          ixx="0.000419" ixy="0.0" ixz="0.0"
+          iyy="0.000244" iyz="0.0"
+          izz="0.000577"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}camera_base_to_depth" type="fixed">
+      <parent link="${prefix}camera_base"/>
+      <child link="${prefix}depth_camera_frame"/>
+      <origin xyz="0.063 0.011 0.020" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}depth_camera_frame"/>
+
+    <joint name="${prefix}depth_camera_frame_to_optical" type="fixed">
+      <parent link="${prefix}depth_camera_frame"/>
+      <child link="${prefix}depth_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+    <link name="${prefix}depth_camera_optical_frame"/>
+
+    <joint name="${prefix}depth_to_rgb" type="fixed">
+      <parent link="${prefix}depth_camera_frame"/>
+      <child link="${prefix}rgb_camera_frame"/>
+      <origin xyz="-0.032007 -0.001871 0.003883" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}rgb_camera_frame"/>
+
+    <joint name="${prefix}rgb_camera_frame_to_optical" type="fixed">
+      <parent link="${prefix}rgb_camera_frame"/>
+      <child link="${prefix}rgb_camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+    <link name="${prefix}rgb_camera_optical_frame"/>
+
+    <joint name="${prefix}depth_to_imu" type="fixed">
+      <parent link="${prefix}depth_camera_frame"/>
+      <child link="${prefix}imu_frame"/>
+      <origin xyz="-0.050680 0.004068 0.001674" rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}imu_frame"/>
+
+  </xacro:macro>
+
+</robot>

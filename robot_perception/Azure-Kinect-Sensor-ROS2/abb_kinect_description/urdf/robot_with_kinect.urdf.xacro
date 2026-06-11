@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     abb_kinect_description
+  File:        robot_with_kinect.urdf.xacro
+  Description: Combined robot + Azure Kinect top-level xacro.
+               Used for standalone visualization and testing.
+               For MoveIt integration use the config in
+               abb_irb6700_with_rail_moveit_config instead.
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+  ============================================================
+
+  TO USE WITHOUT CAMERA: use the original
+    abb_irb6700_175_305_with_rail.xacro instead.
+
+  TO ADD GRIPPER: include abb_gripper_description and attach
+    to rob1_tool0 before the camera mount.
+-->
+<robot name="abb_irb6700_175_305_with_kinect" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find abb_irbt6004_670_description)/urdf/abb_irb6700_175_305_with_rail_macro.xacro"/>
+  <xacro:include filename="$(find abb_kinect_description)/urdf/eye_in_hand_mount.urdf.xacro"/>
+
+  <link name="world"/>
+  <joint name="world_joint" type="fixed">
+    <parent link="world"/>
+    <child link="rob1_axis"/>
+    <origin xyz="0 0.0 0.0" rpy="-0.00031264124506612164 -0.00031250271915146547 0.0004431808433690596"/>
+  </joint>
+
+  <xacro:abb_irb6700_175_305_with_rail prefix="rob1_"/>
+
+  <xacro:kinect_eye_in_hand
+    parent="rob1_tool0"
+    prefix="rob1_"
+    mount_x="0.0"
+    mount_y="0.0"
+    mount_z="0.050"
+  />
+
+</robot>

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     abb_kinect_description
+  File:        eye_in_hand_mount.urdf.xacro
+  Description: Eye-in-hand mount macro for Azure Kinect DK
+               on ABB IRB6700. Attaches camera to any parent
+               frame (typically tool0 or gripper body).
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+  ============================================================
+
+  USAGE in MoveIt config robot.urdf.xacro:
+    <xacro:include filename="$(find abb_kinect_description)/urdf/eye_in_hand_mount.urdf.xacro"/>
+    <xacro:kinect_eye_in_hand parent="rob1_tool0" prefix="rob1_"/>
+
+  TO REMOVE CAMERA: comment out those two lines. Nothing else changes.
+  TO MOVE TO GRIPPER: change parent to "rob1_gripper_base_link"
+
+  Parameters:
+    parent   : parent frame to attach camera to
+    prefix   : TF prefix (e.g. "rob1_")
+    mount_x  : X offset from parent (default 0.0m)
+    mount_y  : Y offset from parent (default 0.0m)
+    mount_z  : Z standoff distance  (default 0.050m = 50mm)
+
+  NOTE: mount_z is a placeholder — update after physical
+        bracket measurement. After hand-eye calibration
+        (Step 5) this is superseded by calibrated transform.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find abb_kinect_description)/urdf/azure_kinect.urdf.xacro"/>
+
+  <xacro:macro name="kinect_eye_in_hand" params="parent prefix mount_x:=0.0 mount_y:=0.0 mount_z:=0.050">
+
+    <link name="${prefix}kinect_mount_link">
+      <visual>
+        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.060" length="${mount_z}"/>
+        </geometry>
+        <material name="kinect_bracket_grey">
+          <color rgba="0.5 0.5 0.5 0.8"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.060" length="${mount_z}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.200"/>
+        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
+        <inertia
+          ixx="0.000017" ixy="0.0" ixz="0.0"
+          iyy="0.000017" iyz="0.0"
+          izz="0.000036"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}tool0_to_kinect_mount" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}kinect_mount_link"/>
+      <origin xyz="${mount_x} ${mount_y} ${mount_z}" rpy="0 0 0"/>
+    </joint>
+
+    <xacro:azure_kinect prefix="${prefix}"/>
+
+    <joint name="${prefix}kinect_mount_to_camera_base" type="fixed">
+      <parent link="${prefix}kinect_mount_link"/>
+      <child link="${prefix}camera_base"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>

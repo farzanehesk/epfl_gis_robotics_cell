@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!--
+  Package:     abb_gripper_description
+  Description: URDF/xacro description for Joulin PP-PG-160x600
+               vacuum gripper on ABB IRB6700 175/3.05
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+-->
+<package format="3">
+  <name>abb_gripper_description</name>
+  <version>0.0.0</version>
+  <description>
+    URDF/xacro description for Joulin PP-PG-160x600-P20-2STX4 vacuum gripper
+    on ABB IRB6700. Modular macro — attach to tool0, remove without changing robot URDF.
+  </description>
+  <maintainer email="farzane.eskandarii@gmail.com">farzaneh</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     abb_gripper_description
+  File:        pp_pg_160x600.urdf.xacro
+  Description: URDF/xacro for Joulin PP-PG-160x600-P20-2STX4
+               pneumatic vacuum gripper on ABB IRB6700 175/3.05
+  Author:      Farzaneh Eskandari
+  Email:       farzane.eskandarii@gmail.com
+  Date:        2026-06-05
+  ============================================================
+  STL: Y=0 mounting face, Y=+87 suction face
+  Visual xyz="0 0 0.087" — correct position, small gap is flange mesh depth
+  Collision: simple box, same position as visual, NO rotation needed
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="pp_pg_160x600" params="parent prefix">
+
+    <link name="${prefix}gripper_base_link">
+      <visual>
+        <origin xyz="0 0 0.087" rpy="${pi/2} ${pi} ${-pi/2}"/>
+        <geometry>
+          <mesh filename="package://abb_gripper_description/meshes/pp_pg_160x600.stl"
+                scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="gripper_grey">
+          <color rgba="0.6 0.6 0.65 1.0"/>
+        </material>
+      </visual>
+
+      <collision>
+        <!--
+          Box in URDF frame (no rotation):
+            X = 0.600m (600mm length, horizontal)
+            Y = 0.160m (160mm width)
+            Z = 0.087m (87mm depth, forward from flange)
+          Center at half depth = 0.0435m forward from link origin
+        -->
+        <origin xyz="0 0 0.0435" rpy="0 0 ${pi/2}"/>
+        <geometry>
+          <box size="0.600 0.160 0.087"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <mass value="4.6"/>
+        <origin xyz="0 0 0.0435" rpy="0 0 ${pi/2}"/>
+        <inertia
+          ixx="0.03481" ixy="0.0" ixz="0.0"
+          iyy="0.13880" iyz="0.0"
+          izz="0.14827"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}tool0_to_gripper" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}gripper_base_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}gripper_tcp"/>
+    <joint name="${prefix}gripper_base_to_tcp" type="fixed">
+      <parent link="${prefix}gripper_base_link"/>
+      <child link="${prefix}gripper_tcp"/>
+      <origin xyz="0 0 0.087" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>

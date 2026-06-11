@@ -1,0 +1,4 @@
+[submodule "Azure-Kinect-Sensor-ROS2/Azure_Kinect_ROS_Driver"]
+	path = Azure-Kinect-Sensor-ROS2/Azure_Kinect_ROS_Driver
+	url = https://github.com/microsoft/Azure_Kinect_ROS_Driver.git
+	branch = humble

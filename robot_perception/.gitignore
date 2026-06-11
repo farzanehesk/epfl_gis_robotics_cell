@@ -1,0 +1,22 @@
+# ROS2 build artifacts
+build/
+install/
+log/
+*.pyc
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large binary files — comment out if you want to track meshes
+*.bag
+*.db3
+
+# Keep STL/DAE meshes in git (needed for URDF visualization)
+# *.stl
+# *.dae
