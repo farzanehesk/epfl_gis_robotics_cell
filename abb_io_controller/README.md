@@ -23,10 +23,8 @@ Official manual:
 [ABB Scalable I/O – Application Manual (3HAC070208-001)](https://search.abb.com/library/Download.aspx?DocumentID=3HAC070208-001&LanguageCode=en&DocumentPartId=&Action=Launch)
 
 
-<img src="Screenshot%20from%202026-06-12%2010-49-42.png" alt="alt text" width="50%"> 
-<img src="Screenshot%20from%202026-06-12%2010-50-26.png" alt="alt text" width="50%">
-
-
+<img src="images/1.png" alt="Screenshot 1" width="40%"> &nbsp;&nbsp;&nbsp;&nbsp;
+<img src="images/2.png" alt="Screenshot 2" width="40%">
 ---
 
 ## Interfaces
