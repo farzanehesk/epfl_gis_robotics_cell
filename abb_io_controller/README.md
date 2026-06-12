@@ -23,6 +23,11 @@ Official manual:
 [ABB Scalable I/O – Application Manual (3HAC070208-001)](https://search.abb.com/library/Download.aspx?DocumentID=3HAC070208-001&LanguageCode=en&DocumentPartId=&Action=Launch)
 
 
+<img src="Screenshot from 2026-06-12 10-49-42.png" alt="alt text" width="50%">
+
+<img src="Screenshot from 2026-06-12 10-50-26.png" alt="alt text" width="50%">
+
+
 ---
 
 ## Interfaces
@@ -87,3 +92,12 @@ ros2 service call /tool_changer/lock std_srvs/srv/Trigger
 ```
 
 ⚠️ **Safety:** Before toggling the tool changer, ensure no tool is attached or that it is properly supported — unlocking will release the SWA-160 adapter.
+
+
+## Operational Requirements
+
+- **Controller must be in AUTO mode** for `setIOSignal` (digital output writes) to succeed via RWS.
+- In MANUAL mode, IRC5 rejects external I/O writes with HTTP 403 (error code -1073445881) — this is an intentional IRC5 safety restriction, not a bug or permission/mastership issue.
+- RWS mastership domains are `cfg`, `motion`, `rapid` only — there is no `iosystem` mastership; I/O writes are gated solely by operating mode.
+- Verified 2026-06-11: GET (read) requests work in any mode; POST `?action=set` requires AUTO.
+
