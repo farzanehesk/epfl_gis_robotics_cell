@@ -11,25 +11,46 @@
   ============================================================
 
   All dimensions from official Schunk datasheet (SWS-160):
-    SWK-160 (robot side / master):  Ø217mm × 55.5mm,  mass=6.44kg
-    SWA-160 (tool side / adapter):  Ø217mm × 37.6mm,  mass=2.86kg
+    SWK-160 (robot side / master):  Ø176mm body, Ø217mm outer, mass=6.44kg
+    SWA-160 (tool side / adapter):  Ø176mm body, Ø217mm outer, mass=2.86kg
     Total coupled height:           55.5 + 37.6 = 93.1mm
 
-  NOTE: STL meshes do not match datasheet dimensions (SWK STL = 100.6mm).
-        Cylinders are used for both visual and collision to ensure accuracy.
+  STL coordinate system (verified via bounds measurement):
+    SWK: Y=-30 to +70.6 (axial), X=-88 to +88, Z=-108.5 to +108.5
+    SWA: Y=-37.5 to 0 (axial),   X=-88 to +88, Z=-108.5 to +108.5
+    → STL Y is the cylinder axis in both meshes
 
-  Geometry convention:
-    - Link origin is at the MOUNTING face (robot-side face, Z=0)
-    - Geometry extends in +Z direction toward the tool
-    - Cylinder center offset = height/2
+  Rotation rpy="${-pi/2} 0 0" maps STL Y → URDF +Z (away from robot):
+    STL X → URDF X
+    STL Y → URDF +Z  (axial, toward tool)
+    STL Z → URDF -Y
 
-  SWK-160:
-    visual/collision center: xyz="0 0 0.02775"  (55.5/2 = 27.75mm)
-    interface joint offset:  xyz="0 0 0.0555"   (full height = 55.5mm)
+  SWK-160 STL geometry breakdown (from datasheet drawing + bounds):
+    Y = -55.5 to -30.0 : robot wrist attachment plate (embedded in robot flange CAD)
+    Y = -30.0 to   0.0 : robot-side locating features (spigot, bolt bosses)
+    Y =   0.0 to +55.5 : SWK main visible body (matches datasheet 55.5mm height)
+    Y = +55.5 to +70.6 : interface protrusion that mates INTO the SWA
 
-  SWA-160:
-    visual/collision center: xyz="0 0 0.0188"   (37.6/2 = 18.8mm)
-    tool_mount joint offset: xyz="0 0 0.0376"   (full height = 37.6mm)
+    Visual offset xyz="0 0 0.055":
+      With rpy="${-pi/2} 0 0", STL Y maps to URDF +Z.
+      Offset of +0.055m shifts the mesh so that STL Y=-55.5mm aligns with
+      URDF Z=0 (tool0 face). This was determined empirically in RViz —
+      the 0.055 value places the SWK main body flush against tool0
+      with attachment geometry naturally hidden inside the robot flange mesh.
+      NOTE: This offset does NOT equal abs(Y_min)=30mm because the STL
+      includes additional robot-wrist adapter plate geometry (Y=-55.5 to -30)
+      that is not part of the SWK itself.
+
+    Joint offset: 0.0555m = datasheet SWK height
+      The SWK/SWA mating face is at the end of the main body (55.5mm),
+      NOT at the end of the interface protrusion (70.6mm), because the
+      protrusion goes INTO the SWA — the kinematic interface is at 55.5mm.
+
+  SWA-160 STL geometry breakdown:
+    Y = -37.5 to 0: full SWA body (matches datasheet 37.6mm height)
+    Y = 0: interface face (mates with SWK) → URDF Z=0 at SWK interface ✅
+    Visual offset xyz="0 0 0.000": no offset needed, Y=0 is already at Z=0
+    Joint offset: 0.0376m = datasheet SWA height
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
@@ -40,21 +61,30 @@
 
   <!-- ========================================================
        SWK-160  —  robot side (master)
-       Mounts on tool0, interface face at Z=+55.5mm
+       Mounts on tool0, SWK/SWA interface face at Z=+55.5mm
+       Attachment geometry (Y<0 in STL) hidden inside robot flange ✅
        ======================================================== -->
   <xacro:macro name="swk_160_robot_side" params="parent prefix">
     <link name="${prefix}swk_160_link">
 
-      <!-- Cylinder visual using official datasheet dimensions -->
+      <!-- Mesh visual using official Schunk STL.
+           rpy="${-pi/2} 0 0": maps STL Y → URDF +Z (toward tool).
+           xyz="0 0 0.055": empirically determined offset — places SWK main
+           body (55.5mm) outside robot flange. The STL includes extra robot-
+           wrist adapter plate geometry (beyond the 30mm locating features)
+           which is why offset is 0.055 rather than the expected 0.030.
+           Attachment/locating geometry naturally sits inside robot flange. -->
       <visual>
-        <origin xyz="0 0 0.02775" rpy="0 0 0"/>
+        <origin xyz="0 0 0.055" rpy="${-pi/2} 0 0"/>
         <geometry>
-          <cylinder radius="0.1085" length="0.0555"/>
+          <mesh filename="package://sws_160_description/meshes/swk_160_robot_side_bin.stl"
+                scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="schunk_grey"/>
       </visual>
 
-      <!-- Collision cylinder — identical to visual -->
+      <!-- Collision cylinder: datasheet dimensions for accurate planning
+           center at half of 55.5mm = 27.75mm, length = 55.5mm -->
       <collision>
         <origin xyz="0 0 0.02775" rpy="0 0 0"/>
         <geometry>
@@ -78,7 +108,11 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
-    <!-- Interface frame at the mating face between SWK and SWA -->
+    <!-- Interface frame at SWK/SWA mating face.
+         Offset = datasheet SWK height = 55.5mm.
+         Note: STL extends to Y=70.6mm but the extra 15.1mm is the
+         interface protrusion that goes INTO the SWA — kinematic
+         interface is at 55.5mm, not 70.6mm. -->
     <link name="${prefix}swk_160_interface"/>
     <joint name="${prefix}swk_160_to_interface" type="fixed">
       <parent link="${prefix}swk_160_link"/>
@@ -95,16 +129,22 @@
   <xacro:macro name="swa_160_tool_side" params="parent prefix">
     <link name="${prefix}swa_160_link">
 
-      <!-- Cylinder visual using official datasheet dimensions -->
+      <!-- Mesh visual using official Schunk STL.
+           rpy="${-pi/2} 0 0": maps STL Y → URDF +Z (toward tool).
+           xyz="0 0 0.000": STL Y=0 is the interface face → already at
+           URDF Z=0, no offset needed. STL Y=-37.5 (tool mount) maps
+           to URDF Z=-37.5mm (pointing back toward robot, inside SWK). -->
       <visual>
-        <origin xyz="0 0 0.0188" rpy="0 0 0"/>
+        <origin xyz="0 0 0.000" rpy="${-pi/2} 0 0"/>
         <geometry>
-          <cylinder radius="0.1085" length="0.0376"/>
+          <mesh filename="package://sws_160_description/meshes/swa_160_tool_side_bin.stl"
+                scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="schunk_grey"/>
       </visual>
 
-      <!-- Collision cylinder — identical to visual -->
+      <!-- Collision cylinder: datasheet dimensions
+           center at half of 37.6mm = 18.8mm, length = 37.6mm -->
       <collision>
         <origin xyz="0 0 0.0188" rpy="0 0 0"/>
         <geometry>
@@ -128,7 +168,8 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
-    <!-- Tool mount frame at the gripper mating face -->
+    <!-- Tool mount frame at the gripper mating face
+         Offset = datasheet SWA height = 37.6mm -->
     <link name="${prefix}swa_160_tool_mount"/>
     <joint name="${prefix}swa_160_to_tool_mount" type="fixed">
       <parent link="${prefix}swa_160_link"/>
