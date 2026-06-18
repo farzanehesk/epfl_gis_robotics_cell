@@ -4,76 +4,111 @@
   Package:     abb_kinect_description
   File:        eye_in_hand_mount.urdf.xacro
   Description: Eye-in-hand mount macro for Azure Kinect DK
-               on ABB IRB6700. Attaches camera to any parent
-               frame (typically tool0 or gripper body).
+               on ABB IRB6700. Mounts Kinect on aluminum
+               extrusion bracket on flat chamfer face of SWK-160.
   Author:      Farzaneh Eskandari
   Email:       farzane.eskandarii@gmail.com
   Date:        2026-06-05
   ============================================================
 
-  USAGE in MoveIt config robot.urdf.xacro:
+  Physical setup (from photos 2026-06-17):
+    - Bracket: aluminum T-slot extrusion, L-shaped
+    - Mounted on: flat chamfer face of SWK-160
+    - Bracket extends ~50mm away from SWK flat face
+    - Kinect long axis (126mm) parallel to tool Z axis
+    - Kinect lens faces along tool Z (+Z, toward TCP)
+
+  Verified SWK local axes (from TF matrix, all joints=0):
+    +X (red)  = pointing DOWN in world (-Z world)
+    +Y (green) = pointing SIDEWAYS
+    +Z (blue) = pointing along TOOL AXIS toward TCP
+
+    → "away from SWK flat face" = -X direction in SWK local frame
+
+  Mount parameters (approximate — superseded by hand-eye calibration):
+    mount_x = -0.1085m : SWK outer radius to flat face (108.5mm) in -X
+    mount_z = 0.025m   : mid-SWK body along tool Z axis
+    bracket extends further 50mm in -X from bracket origin
+
+  NOTE: All values approximate for collision avoidance visualization.
+        Hand-eye calibration provides the accurate camera→robot transform.
+
+  USAGE in main robot URDF:
     <xacro:include filename="$(find abb_kinect_description)/urdf/eye_in_hand_mount.urdf.xacro"/>
-    <xacro:kinect_eye_in_hand parent="rob1_tool0" prefix="rob1_"/>
+    <xacro:kinect_eye_in_hand parent="rob1_swk_160_link" prefix="rob1_"
+        mount_x="-0.1085" mount_y="0.0" mount_z="0.025"
+        mount_roll="0" mount_pitch="0" mount_yaw="0"/>
 
-  TO REMOVE CAMERA: comment out those two lines. Nothing else changes.
-  TO MOVE TO GRIPPER: change parent to "rob1_gripper_base_link"
-
-  Parameters:
-    parent   : parent frame to attach camera to
-    prefix   : TF prefix (e.g. "rob1_")
-    mount_x  : X offset from parent (default 0.0m)
-    mount_y  : Y offset from parent (default 0.0m)
-    mount_z  : Z standoff distance  (default 0.050m = 50mm)
-
-  NOTE: mount_z is a placeholder — update after physical
-        bracket measurement. After hand-eye calibration
-        (Step 5) this is superseded by calibrated transform.
+  TO REMOVE CAMERA: comment out those two lines.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:include filename="$(find abb_kinect_description)/urdf/azure_kinect.urdf.xacro"/>
 
-  <xacro:macro name="kinect_eye_in_hand" params="parent prefix mount_x:=0.0 mount_y:=0.0 mount_z:=0.050">
+  <xacro:macro name="kinect_eye_in_hand"
+               params="parent prefix mount_x mount_y mount_z
+                       mount_roll mount_pitch mount_yaw">
 
-    <link name="${prefix}kinect_mount_link">
+    <!-- =====================================================
+         Bracket: aluminum T-slot extrusion, L-shaped
+         Sits on flat chamfer face of SWK-160
+         Extends in -X direction (away from SWK flat face)
+         Approximate size: 50mm deep x 60mm wide x 40mm tall
+         ===================================================== -->
+    <link name="${prefix}kinect_bracket">
       <visual>
-        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
+        <origin xyz="-0.025 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.060" length="${mount_z}"/>
+          <box size="0.050 0.060 0.040"/>
         </geometry>
-        <material name="kinect_bracket_grey">
-          <color rgba="0.5 0.5 0.5 0.8"/>
+        <material name="bracket_silver">
+          <color rgba="0.75 0.75 0.75 1.0"/>
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
+        <origin xyz="-0.025 0 0" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.060" length="${mount_z}"/>
+          <box size="0.050 0.060 0.040"/>
         </geometry>
       </collision>
       <inertial>
         <mass value="0.200"/>
-        <origin xyz="0 0 ${mount_z/2}" rpy="0 0 0"/>
-        <inertia
-          ixx="0.000017" ixy="0.0" ixz="0.0"
-          iyy="0.000017" iyz="0.0"
-          izz="0.000036"/>
+        <origin xyz="-0.025 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.0003" iyy="0.0003" izz="0.0003"
+                 ixy="0" ixz="0" iyz="0"/>
       </inertial>
     </link>
 
-    <joint name="${prefix}tool0_to_kinect_mount" type="fixed">
+    <!-- Attach bracket to SWK flat chamfer face
+         mount_x=-0.1085: SWK outer radius, bracket on flat face
+         mount_z=0.025: mid-SWK body along tool axis -->
+    <joint name="${prefix}swk_to_bracket" type="fixed">
       <parent link="${parent}"/>
-      <child link="${prefix}kinect_mount_link"/>
-      <origin xyz="${mount_x} ${mount_y} ${mount_z}" rpy="0 0 0"/>
+      <child link="${prefix}kinect_bracket"/>
+      <origin xyz="${mount_x} ${mount_y} ${mount_z}"
+              rpy="${mount_roll} ${mount_pitch} ${mount_yaw}"/>
     </joint>
 
-    <xacro:azure_kinect prefix="${prefix}"/>
-
-    <joint name="${prefix}kinect_mount_to_camera_base" type="fixed">
-      <parent link="${prefix}kinect_mount_link"/>
-      <child link="${prefix}camera_base"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
+    <!-- =====================================================
+         Kinect: mounted on top of bracket
+         Extends further 50mm in -X from bracket origin
+         Long axis (126mm) along Z (tool axis direction)
+         Lens faces +Z (toward TCP)
+         azure_kinect_link origin = bottom-left-back corner:
+           X = long axis (126mm) → along tool Z → use mount_z
+           Y = height (103mm)    → along world up → use mount_x (negative)
+           Z = depth (39mm)      → lens direction → already +Z
+         ===================================================== -->
+    <xacro:azure_kinect
+      parent="${prefix}kinect_bracket"
+      prefix="${prefix}"
+      mount_x="-0.050"     
+      mount_y="-0.0515"     
+      mount_z="-0.063"    
+      mount_roll="0"
+      mount_pitch="0"
+      mount_yaw="0"
+    />
 
   </xacro:macro>
 

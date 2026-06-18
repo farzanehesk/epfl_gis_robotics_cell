@@ -13,7 +13,7 @@
   ============================================================
 
   Physical dimensions (Microsoft spec):
-    Body:   126mm x 103mm x 39mm
+    Body:   126mm x 103mm x 39mm  (L x H x D)
     Weight: 440g
 
   Factory calibration (unit 000720521712):
@@ -21,78 +21,97 @@
     RGB intrinsics:   cx=1021.1, cy=779.0, fx=971.7, fy=971.5
     Depth-to-RGB translation: -32.007mm, -1.871mm, 3.883mm
 
+  Coordinate convention:
+    camera_base origin = bottom-left-back corner of camera body
+    X = along long axis (126mm direction)
+    Y = up (103mm direction)
+    Z = forward (39mm depth direction, lens faces +Z)
+
   Frame conventions (ROS standard):
-    camera_base             : origin at bottom-center of camera body
-    depth_camera_frame      : depth sensor center
-    depth_camera_optical_frame : ROS optical frame (Z fwd, X right, Y down)
-    rgb_camera_frame        : RGB sensor center
-    rgb_camera_optical_frame   : ROS optical frame (Z fwd, X right, Y down)
-    imu_frame               : IMU sensor center
+    azure_kinect_link           : origin at bottom-left-back corner
+    depth_camera_frame          : depth sensor center
+    depth_camera_optical_frame  : ROS optical (Z fwd, X right, Y down)
+    rgb_camera_frame            : RGB sensor center
+    rgb_camera_optical_frame    : ROS optical (Z fwd, X right, Y down)
+    imu_frame                   : IMU sensor center
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="azure_kinect" params="prefix">
+  <xacro:macro name="azure_kinect"
+               params="parent prefix mount_x mount_y mount_z
+                       mount_roll mount_pitch mount_yaw">
 
-    <link name="${prefix}camera_base">
+    <link name="${prefix}azure_kinect_link">
+      <!-- Camera body: 126mm x 103mm x 39mm, origin at bottom-left-back corner -->
       <visual>
-        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
+        <origin xyz="0.063 0.0515 0.0195" rpy="0 0 0"/>
         <geometry>
           <box size="0.126 0.103 0.039"/>
         </geometry>
         <material name="kinect_dark_gray">
-          <color rgba="0.2 0.2 0.2 1.0"/>
+          <color rgba="0.15 0.15 0.15 1.0"/>
         </material>
       </visual>
       <collision>
-        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
+        <origin xyz="0.063 0.0515 0.0195" rpy="0 0 0"/>
         <geometry>
           <box size="0.126 0.103 0.039"/>
         </geometry>
       </collision>
       <inertial>
         <mass value="0.440"/>
-        <origin xyz="0.063 0 0.0195" rpy="0 0 0"/>
-        <inertia
-          ixx="0.000419" ixy="0.0" ixz="0.0"
-          iyy="0.000244" iyz="0.0"
-          izz="0.000577"/>
+        <origin xyz="0.063 0.0515 0.0195" rpy="0 0 0"/>
+        <inertia ixx="0.000419" ixy="0.0" ixz="0.0"
+                 iyy="0.000244" iyz="0.0" izz="0.000577"/>
       </inertial>
     </link>
 
+    <joint name="${prefix}mount_to_kinect" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}azure_kinect_link"/>
+      <origin xyz="${mount_x} ${mount_y} ${mount_z}"
+              rpy="${mount_roll} ${mount_pitch} ${mount_yaw}"/>
+    </joint>
+
+    <!-- Depth camera frame: centered on depth sensor -->
+    <link name="${prefix}depth_camera_frame"/>
     <joint name="${prefix}camera_base_to_depth" type="fixed">
-      <parent link="${prefix}camera_base"/>
+      <parent link="${prefix}azure_kinect_link"/>
       <child link="${prefix}depth_camera_frame"/>
       <origin xyz="0.063 0.011 0.020" rpy="0 0 0"/>
     </joint>
-    <link name="${prefix}depth_camera_frame"/>
 
+    <!-- Depth optical frame: ROS convention (Z fwd, X right, Y down) -->
+    <link name="${prefix}depth_camera_optical_frame"/>
     <joint name="${prefix}depth_camera_frame_to_optical" type="fixed">
       <parent link="${prefix}depth_camera_frame"/>
       <child link="${prefix}depth_camera_optical_frame"/>
       <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     </joint>
-    <link name="${prefix}depth_camera_optical_frame"/>
 
+    <!-- RGB camera frame: offset from depth by factory calibration -->
+    <link name="${prefix}rgb_camera_frame"/>
     <joint name="${prefix}depth_to_rgb" type="fixed">
       <parent link="${prefix}depth_camera_frame"/>
       <child link="${prefix}rgb_camera_frame"/>
       <origin xyz="-0.032007 -0.001871 0.003883" rpy="0 0 0"/>
     </joint>
-    <link name="${prefix}rgb_camera_frame"/>
 
+    <!-- RGB optical frame: ROS convention (Z fwd, X right, Y down) -->
+    <link name="${prefix}rgb_camera_optical_frame"/>
     <joint name="${prefix}rgb_camera_frame_to_optical" type="fixed">
       <parent link="${prefix}rgb_camera_frame"/>
       <child link="${prefix}rgb_camera_optical_frame"/>
       <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     </joint>
-    <link name="${prefix}rgb_camera_optical_frame"/>
 
+    <!-- IMU frame: offset from depth by factory calibration -->
+    <link name="${prefix}imu_frame"/>
     <joint name="${prefix}depth_to_imu" type="fixed">
       <parent link="${prefix}depth_camera_frame"/>
       <child link="${prefix}imu_frame"/>
       <origin xyz="-0.050680 0.004068 0.001674" rpy="0 0 0"/>
     </joint>
-    <link name="${prefix}imu_frame"/>
 
   </xacro:macro>
 

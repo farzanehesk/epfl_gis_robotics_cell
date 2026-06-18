@@ -48,7 +48,7 @@
 
   SWA-160 STL geometry breakdown:
     Y = -37.5 to 0: full SWA body (matches datasheet 37.6mm height)
-    Y = 0: interface face (mates with SWK) → URDF Z=0 at SWK interface ✅
+    Y = 0: interface face (mates with SWK) → URDF Z=0 at SWK interface 
     Visual offset xyz="0 0 0.000": no offset needed, Y=0 is already at Z=0
     Joint offset: 0.0376m = datasheet SWA height
 -->
@@ -62,7 +62,7 @@
   <!-- ========================================================
        SWK-160  —  robot side (master)
        Mounts on tool0, SWK/SWA interface face at Z=+55.5mm
-       Attachment geometry (Y<0 in STL) hidden inside robot flange ✅
+       Attachment geometry (Y<0 in STL) hidden inside robot flange 
        ======================================================== -->
   <xacro:macro name="swk_160_robot_side" params="parent prefix">
     <link name="${prefix}swk_160_link">
