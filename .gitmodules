@@ -1,0 +1,3 @@
+[submodule "robot_perception/easy_handeye2"]
+	path = robot_perception/easy_handeye2
+	url = https://github.com/marcoesposito1988/easy_handeye2.git
