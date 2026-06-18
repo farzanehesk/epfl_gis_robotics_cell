@@ -1,0 +1,20 @@
+parameters:
+  name: abb_irb6700_kinect_eih
+  calibration_type: eye_in_hand
+  robot_base_frame: rob1_axis
+  robot_effector_frame: rob1_tool0
+  tracking_base_frame: rob1_rgb_camera_optical_frame
+  tracking_marker_frame: rob1_charuco_board
+  freehand_robot_movement: true
+  move_group_namespace: /
+  move_group: manipulator
+transform:
+  translation:
+    x: -0.152573989753626
+    y: -0.06871308986534018
+    z: 0.15471039117971264
+  rotation:
+    x: -0.0007082333680206922
+    y: 0.003981503262519448
+    z: -0.6082222451226514
+    w: 0.7937564781311888

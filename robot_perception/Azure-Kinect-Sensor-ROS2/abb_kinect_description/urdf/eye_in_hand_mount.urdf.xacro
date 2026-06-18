@@ -40,6 +40,19 @@
         mount_roll="0" mount_pitch="0" mount_yaw="0"/>
 
   TO REMOVE CAMERA: comment out those two lines.
+
+  The precise, measured board parameters are:
+
+  square_length: 0.0548 (square ≈ 54.8 mm)
+  marker_length: 0.04062 (marker = 40.62 mm)
+  dictionary: DICT_4X4_50
+  squares_x: 5, squares_y: 7
+
+  dictionary:    DICT_4X4_50
+  squares_x:     5
+  squares_y:     7
+  square_length: 0.0548
+  marker_length: 0.04062
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
