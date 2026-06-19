@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!--
+  ============================================================
+  Package:     abb_force_sensor_description
+  Description: ABB Force Sensor (large, 3HAC091307-001/02) +
+               adapter plate, between robot flange (tool0) and
+               the Schunk SWK-160 tool changer.
+  Stack order (flange outward):
+    tool0 -> ABB force sensor (62mm) -> adapter plate (4mm) -> SWK-160
+  Author:      Farzaneh Eskandari
+  Institution: EPFL
+  Email:       farzane.eskandarii@gmail.com - farzaneh.eskandari@epfl.ch
+  Date:        2026-06-19
+  ============================================================
+  NOTE: All rotations are ZERO for now. The changer clocking
+        error will be handled by recalibration, not modeled here yet.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <material name="abb_sensor_grey">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  <material name="adapter_plate_grey">
+    <color rgba="0.55 0.55 0.55 1.0"/>
+  </material>
+
+  <!-- ABB force sensor + adapter plate.
+       Mounts on `parent` (= rob1_tool0), outputs `${prefix}force_adapter_mount`
+       which is where the SWK-160 should attach. -->
+  <xacro:macro name="abb_force_sensor" params="parent prefix
+                                               sensor_height:=0.062
+                                               plate_height:=0.004
+                                               sensor_radius:=0.075
+                                               plate_radius:=0.075">
+
+    <!-- ===== ABB force sensor body (62mm) ===== -->
+    <link name="${prefix}force_sensor_link">
+      <visual>
+        <origin xyz="0 0 ${sensor_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${sensor_radius}" length="${sensor_height}"/>
+        </geometry>
+        <material name="abb_sensor_grey"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${sensor_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${sensor_radius}" length="${sensor_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.0"/>
+        <origin xyz="0 0 ${sensor_height/2}" rpy="0 0 0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0"
+                 iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- sensor bolts directly onto the flange: z=0, no rotation -->
+    <joint name="${prefix}tool0_to_force_sensor" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}force_sensor_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- ===== adapter plate (4mm) ===== -->
+    <link name="${prefix}force_adapter_link">
+      <visual>
+        <origin xyz="0 0 ${plate_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${plate_radius}" length="${plate_height}"/>
+        </geometry>
+        <material name="adapter_plate_grey"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${plate_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="${plate_radius}" length="${plate_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.2"/>
+        <origin xyz="0 0 ${plate_height/2}" rpy="0 0 0"/>
+        <inertia ixx="0.0002" ixy="0" ixz="0"
+                 iyy="0.0002" iyz="0" izz="0.0002"/>
+      </inertial>
+    </link>
+
+    <!-- plate sits on top of sensor: z = sensor_height -->
+    <joint name="${prefix}force_sensor_to_adapter" type="fixed">
+      <parent link="${prefix}force_sensor_link"/>
+      <child link="${prefix}force_adapter_link"/>
+      <origin xyz="0 0 ${sensor_height}" rpy="0 0 0"/>
+    </joint>
+
+    <!-- output mount frame at top of plate, where SWK-160 attaches.
+         z = plate_height. THE CLOCKING TILT WILL GO IN THIS JOINT'S rpy LATER. -->
+    <link name="${prefix}force_adapter_mount"/>
+    <joint name="${prefix}adapter_to_mount" type="fixed">
+      <parent link="${prefix}force_adapter_link"/>
+      <child link="${prefix}force_adapter_mount"/>
+      <origin xyz="0 0 ${plate_height}" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>
