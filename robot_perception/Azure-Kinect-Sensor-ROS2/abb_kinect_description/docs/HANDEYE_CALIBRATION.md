@@ -31,14 +31,6 @@ used for vision-guided tasks in the robot's coordinate system.
 > Always re-measure if the board is reprinted, and update
 > `kinect_handeyecalib.launch.py` accordingly.
 
----
-
-## Network setup (once per session)
-
-```bash
-sudo ip addr add 192.168.0.100/24 dev enx6c1ff704db5e
-ping 192.168.0.20
-```
 
 ---
 
