@@ -34,21 +34,6 @@ used for vision-guided tasks in the robot's coordinate system.
 
 ---
 
-## Robot side (FlexPendant / RAPID)
-
-1. In `TRob1Main.mod`, comment out the home move so re-gripping the deadman does
-   not drive the robot back to zero mid-session:
-   ```
-   ! MoveAbsJ home, v100, fine, tool0;
-   ```
-2. Jog the robot to a pose where the camera clearly sees the board
-   (~50-80 cm, whole board in frame).
-3. Set the robot up so EGM / motion is ready (Play).
-
-> Remember to revert the `MoveAbsJ home` comment when finished.
-
----
-
 ## Three-terminal launch
 
 All terminals: `cd ~/ws_moveit && source install/setup.bash` first.
