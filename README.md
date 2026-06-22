@@ -1,6 +1,8 @@
 # EPFL GIS Robotics Cell
 
-ROS2 package for controlling digital I/O signals on the ABB IRC5 controller via RWS (Robot Web Services) — used for the Schunk SWS-160 tool changer and the Joulin PP-PG-160x600 vacuum gripper.
+ROS2 packages for the EPFL GIS multi-robot cell: motion control, end-effector
+descriptions, force sensing, digital I/O, and eye-in-hand perception for an
+ABB IRB6700 on a linear rail with a Schunk SWS-160 tool changer.
 
 Robot: ABB IRB6700 175/3.05 on IRBT6004 7m rail\
 Author: Farzaneh Eskandari\
