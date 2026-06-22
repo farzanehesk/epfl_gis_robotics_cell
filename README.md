@@ -36,7 +36,7 @@ Perception packages for the cell:
   detector + easy_handeye2), and the point-cloud bridge into the robot TF tree.
   Uses the [Azure_Kinect_ROS_Driver](https://github.com/microsoft/Azure_Kinect_ROS_Driver)
   submodule. See its [README](robot_perception/Azure-Kinect-Sensor-ROS2/abb_kinect_description/README.md)
-  for build/run and calibration instructions.
+  for build/run and [HANDEYE_CALIBRATION_iNSTRUCTIONS](robot_perception/Azure-Kinect-Sensor-ROS2/abb_kinect_description/docs/HANDEYE_CALIBRATION.md)for calibration instructions. 
 - **`easy_handeye2`** — hand-eye calibration framework (submodule).
 
 ---
