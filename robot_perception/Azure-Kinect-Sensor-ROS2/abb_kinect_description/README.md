@@ -34,3 +34,42 @@ For step-by-step instructions on running the eye-in-hand hand-eye calibration
 troubleshooting), see:
 
 ➡️ [docs/HANDEYE_CALIBRATION.md](docs/HANDEYE_CALIBRATION.md)
+
+
+## Build
+
+This package is part of the `~/ws_moveit` workspace. Build it (and the
+packages it works with) from the workspace root:
+
+```bash
+cd ~/ws_moveit
+colcon build --packages-select abb_kinect_description
+source install/setup.bash
+```
+
+## Run
+
+The camera + point cloud run alongside the robot/MoveIt. Each terminal:
+`cd ~/ws_moveit && source install/setup.bash` first.
+
+**Network setup (once per session):**
+
+```bash
+sudo ip addr add 192.168.0.100/24 dev enx6c1ff704db5e
+ping 192.168.0.20
+```
+
+**Terminal 1 — robot + MoveIt** (publishes robot TF incl. the calibrated
+`rob1_rgb_camera_optical_frame`):
+
+```bash
+ros2 launch abb_irb6700_with_rail_moveit_config demo.launch.py \
+  use_fake_hardware:=false rws_ip:=192.168.0.20
+```
+
+**Terminal 2 — Azure Kinect driver + cloud bridge** (starts the camera and
+connects its point cloud into the robot TF tree):
+
+```bash
+ros2 launch abb_kinect_description kinect_with_urdf.launch.py
+```
