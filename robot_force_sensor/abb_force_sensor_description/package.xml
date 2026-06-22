@@ -1,10 +1,20 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<!--
+  ============================================================
+  Package:     abb_force_sensor_description
+  Author:      Farzaneh Eskandari
+  Institution: EPFL
+  Email:       farzane.eskandarii@gmail.com - farzaneh.eskandari@epfl.ch
+  Date:        2026-06-19
+  ============================================================
+-->
 <package format="3">
   <name>abb_force_sensor_description</name>
   <version>0.0.1</version>
-  <description>ABB force sensor (large) + adapter plate description, between tool0 and SWK-160</description>
-  <maintainer email="farzane.eskandarii@gmail.com">Farzaneh Eskandari</maintainer>
+  <description>ABB force sensor (large, 3HAC091307-001/02) + adapter plate description, between tool0 and SWK-160 tool changer</description>
+  <maintainer email="farzaneh.eskandari@epfl.ch">Farzaneh Eskandari</maintainer>
+  <author email="farzane.eskandarii@gmail.com">Farzaneh Eskandari</author>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

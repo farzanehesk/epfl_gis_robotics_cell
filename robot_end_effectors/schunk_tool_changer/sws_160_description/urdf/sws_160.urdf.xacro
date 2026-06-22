@@ -176,6 +176,19 @@
       <child link="${prefix}swa_160_tool_mount"/>
       <origin xyz="0 0 0.0376" rpy="0 0 0"/>
     </joint>
+
+    <!-- =====================================================
+         Generic STRAIGHT TCP frame at the tool mounting face.
+         Cancels the tool-changer clocking (-15 deg about Z) so
+         the frame axes align with tool0's nominal orientation.
+         Tools add their own length below this frame.
+         ===================================================== -->
+    <link name="${prefix}tcp_straight"/>
+    <joint name="${prefix}tool_mount_to_tcp_straight" type="fixed">
+      <parent link="${prefix}swa_160_tool_mount"/>
+      <child link="${prefix}tcp_straight"/>
+      <origin xyz="0 0 0" rpy="0 0 ${-15*pi/180}"/>
+    </joint>
   </xacro:macro>
 
 </robot>

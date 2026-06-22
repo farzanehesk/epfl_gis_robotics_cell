@@ -98,10 +98,10 @@
     </joint>
 
     <!-- RGB optical frame: ROS convention (Z fwd, X right, Y down) -->
-    <link name="${prefix}rgb_camera_optical_frame"/>
+    <link name="${prefix}rgb_camera_optical_frame_visual"/>
     <joint name="${prefix}rgb_camera_frame_to_optical" type="fixed">
       <parent link="${prefix}rgb_camera_frame"/>
-      <child link="${prefix}rgb_camera_optical_frame"/>
+      <child link="${prefix}rgb_camera_optical_frame_visual"/>
       <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
     </joint>
 
