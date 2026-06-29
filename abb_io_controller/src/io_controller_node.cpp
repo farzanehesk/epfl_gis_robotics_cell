@@ -39,6 +39,8 @@ IOControllerNode::IOControllerNode(std::shared_ptr<abb::robot::RWSManager> rws_m
   RCLCPP_INFO(get_logger(), "  /gripper/gripper_cmd action server ready");
 }
 
+// --- Helper ---
+
 bool IOControllerNode::setSignal(const std::string& signal_name, const std::string& value)
 {
   bool success = false;
