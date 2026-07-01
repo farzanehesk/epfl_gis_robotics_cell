@@ -17,7 +17,7 @@ sensor-frame F/T, 6-axis                      publishes WrenchStamped
 Validated end-to-end: a ~1 kg load hung on the gripper reads ~11.6 N cleanly on
 the sensor Z axis, stable, with a consistent offset torque — physically correct.
 
-![alt text](docs/IMG_9588.jpg)
+![alt text](docs/IMG_9593.jpg)
 ---
 
 ## Package layout
