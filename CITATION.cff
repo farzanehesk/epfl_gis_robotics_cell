@@ -24,5 +24,6 @@ keywords:
   - digital fabrication
 repository-code: "https://github.com/farzanehesk/epfl_gis_robotics_cell"
 license: MIT
-version: 0.1.0
-date-released: "2026-07-20"
+version: 0.1.1
+doi: 10.5281/zenodo.21778874
+date-released: "2026-08-03"

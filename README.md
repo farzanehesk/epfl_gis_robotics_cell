@@ -1,7 +1,9 @@
 # EPFL GIS Robotics Cell
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21778874.svg)](https://doi.org/10.5281/zenodo.21778874)
 
 ![EPFL GIS robotics cell](robot_force_sensor/docs/hero.jpg)
 *ABB IRB6700 with eye-in-hand perception and force sensing — live RViz scene and force sensor stream.*
+
 
 
 ROS2 packages for the EPFL GIS multi-robot cell: motion control, end-effector
