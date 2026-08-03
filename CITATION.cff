@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "EPFL GIS Robotics Cell"
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - family-names: Eskandari
+    given-names: Farzaneh
+    affiliation: "EPFL (École Polytechnique Fédérale de Lausanne)"
+    email: farzaneh.eskandari@epfl.ch
+abstract: >-
+  ROS2 packages for the EPFL GIS multi-robot cell: end-effector descriptions,
+  force sensing, digital I/O control, and eye-in-hand perception for an ABB
+  IRB6700 175/3.05 on an IRBT6004 7m linear rail with a Schunk SWS-160 tool
+  changer. Includes the full flange-to-tool kinematic chain, hand-eye
+  calibrated perception, and RWS-based I/O control for the tool changer and
+  vacuum gripper.
+keywords:
+  - ROS2
+  - robotics
+  - ABB IRB6700
+  - force control
+  - hand-eye calibration
+  - perception
+  - digital fabrication
+repository-code: "https://github.com/farzanehesk/epfl_gis_robotics_cell"
+license: MIT
+version: 0.1.0
+date-released: "2026-07-20"
